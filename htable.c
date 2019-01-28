@@ -38,14 +38,19 @@ int main(int argc, char *argv[]) {
 		remove_at(node_arr, min(node_arr, max_idx), max_idx);
 		max_idx--;
 	}
-	traverse_list(&list);
+	printf("uniq_chars: %d\n", uniq_chars);
+	print_list(&list);
+	to_tree(&list);
+	printInorder(list.head);
 	return 0;
 }
 
-void traverse_list(LinkedList* list) {
+
+
+void print_list(LinkedList* list) {
 	Node *current_node = list->head;
 	while (current_node) {
-		printf("%c : %d\n", current_node->c, current_node->freq);
+		printf("%9c : %d\n", current_node->c, current_node->freq);
 		current_node = current_node->next;
 	}
 }
@@ -69,6 +74,20 @@ int min(Node *node_arr, int n) {
 	return lo;
 }
 
+void to_tree(LinkedList *list) {
+	while (list->head->next) {
+		treeify(list);
+	}
+}
+
+void printInorder(Node* node) { 
+	if (node == NULL) 
+		return;
+	printInorder(node->left); 
+	printf("%9c : %d\n", (node->c == '\0'? ' ' : node->c), node->freq);
+	printInorder(node->right); 
+} 
+
 void treeify(LinkedList *list) {
 	Node *new_node = (Node*)malloc(sizeof(Node));
 	new_node->left = list->head;
@@ -82,10 +101,18 @@ void treeify(LinkedList *list) {
 
 void insert(LinkedList *list, Node *node) {
 	Node *current_node = list->head;
-	while (current_node->next->freq < node->next->freq ||
-		(current_node->next->freq == node->next->freq &&
-		current_node->next->c < node->next->c)) {
+	if (NULL == current_node) {
+		append(list, node);
+		return;
+	}
+	while (current_node->next && (current_node->next->freq < node->freq ||
+		(current_node->next->freq == node->freq &&
+		current_node->next->c < node->c))) {
 		current_node = current_node->next;
+		if (NULL == current_node) {
+			append(list, node);
+			return;
+		}
 	}
 	node->next = current_node->next;
 	current_node->next = node;

@@ -18,7 +18,9 @@ struct linkedlist {
 	Node *tail;
 };
 
-void traverse_list(LinkedList*);
+void print_list(LinkedList*);
+
+void printInorder(Node*);
 
 void append(LinkedList*, Node*);
 
@@ -27,5 +29,9 @@ void insert(LinkedList*, Node*);
 int min(Node*, int);
 
 void remove_at(Node*, int, int);
+
+void treeify(LinkedList*);
+
+void to_tree(LinkedList*);
 
 #endif
