@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
 		max_idx--;
 	}
 	printf("uniq_chars: %d\n", uniq_chars);
-	print_list(&list);
 	to_tree(&list);
 	printInorder(list.head);
 	return 0;
@@ -109,6 +108,13 @@ void insert(LinkedList *list, Node *node) {
 	Node *current_node = list->head;
 	if (NULL == current_node) {
 		append(list, node);
+		return;
+	}
+	if (node->freq < current_node->freq ||
+		(node->freq == current_node->freq &&
+		node->c < current_node->c)) {
+		node->next = current_node;
+		list->head = node;
 		return;
 	}
 	while (current_node->next && (current_node->next->freq < node->freq ||
