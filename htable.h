@@ -5,6 +5,8 @@ typedef struct node Node;
 
 typedef struct linkedlist LinkedList;
 
+typedef struct code CharCode;
+
 struct node {
 	int c;
 	int freq;
@@ -17,6 +19,13 @@ struct linkedlist {
 	Node *head;
 	Node *tail;
 };
+
+struct code {
+	char c;
+	char *code;
+};
+
+void traverse(Node*, char*, int);
 
 void print_list(LinkedList*);
 

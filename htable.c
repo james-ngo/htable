@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "htable.h"
 
 int main(int argc, char *argv[]) {
@@ -13,6 +14,7 @@ int main(int argc, char *argv[]) {
 	Node *node_arr;
 	Node *node;
 	LinkedList list = { 0 };
+	char *code;
 	infile = fopen(argv[1], "r");
 	if (!infile) {
 		perror(argv[1]);
@@ -42,14 +44,33 @@ int main(int argc, char *argv[]) {
 		remove_at(node_arr, min(node_arr, max_idx), max_idx);
 		max_idx--;
 	}
-	printf("uniq_chars: %d\n", uniq_chars);
 	to_tree(&list);
-	printInorder(list.head);
+	i = 0;
+	code = (char*)malloc(sizeof(char));
+	code[0] = '\0';
+	traverse(list.head, code, i);
 	return 0;
 }
 
 
-void traverse(list) {
+void traverse(Node *node, char *code, int i) {
+	if (node->c != '\0') {
+		printf("0x%x: %s\n", node->c, code);
+		return;
+	}
+	if (node->left != NULL) {
+		code = realloc(code, (strlen(code) + 2) * sizeof(char));
+		code[i] = '0';
+		code[i + 1] = '\0';
+		traverse(node->left, code, i + 1);
+	}
+	if (node->right != NULL) {
+		code = realloc(code, (strlen(code) + 2) * sizeof(char));
+		code[i] = '1';
+		code[i + 1] = '\0';
+		traverse(node->right, code, i + 1);
+	}
+	i--;
 }
 
 void print_list(LinkedList* list) {
@@ -89,7 +110,7 @@ void printInorder(Node* node) {
 	if (node == NULL) 
 		return;
 	printInorder(node->left); 
-	printf("%9c : %d\n", (node->c == '\0'? ' ' : node->c), node->freq);
+	printf("%9c : %d\n", (node->c == ' '? '_' : node->c), node->freq);
 	printInorder(node->right); 
 } 
 
