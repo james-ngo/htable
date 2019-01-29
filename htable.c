@@ -14,6 +14,10 @@ int main(int argc, char *argv[]) {
 	Node *node;
 	LinkedList list = { 0 };
 	infile = fopen(argv[1], "r");
+	if (!infile) {
+		perror(argv[1]);
+		return 1;
+	}
 	while (EOF != (c = fgetc(infile))) {
 		if (!histogram[c]) {
 			uniq_chars++;
@@ -46,6 +50,8 @@ int main(int argc, char *argv[]) {
 }
 
 
+void traverse(list) {
+}
 
 void print_list(LinkedList* list) {
 	Node *current_node = list->head;
@@ -109,10 +115,6 @@ void insert(LinkedList *list, Node *node) {
 		(current_node->next->freq == node->freq &&
 		current_node->next->c < node->c))) {
 		current_node = current_node->next;
-		if (NULL == current_node) {
-			append(list, node);
-			return;
-		}
 	}
 	node->next = current_node->next;
 	current_node->next = node;
