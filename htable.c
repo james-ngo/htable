@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 	char *code;
 	infile = fopen(argv[1], "r");
 	if (!infile) {
-		perror(argv[1]);
+		printf("usage: %s infile\n", argv[0]);
 		return 1;
 	}
 	while (EOF != (c = fgetc(infile))) {
@@ -26,6 +26,9 @@ int main(int argc, char *argv[]) {
 			uniq_chars++;
 		}
 		histogram[c] += 1;
+	}
+	if (!uniq_chars) {
+		return 0;
 	}
 	node_arr = (Node*)malloc(uniq_chars * sizeof(Node));
 	j = 0;
@@ -60,7 +63,7 @@ int main(int argc, char *argv[]) {
 	traverse(list.head, codes, code, i, &j);
 	sort_codes(codes, uniq_chars);
 	for (i = 0; i < uniq_chars; i++) {
-		printf("0x%x: %s\n", codes[i].c, codes[i].code);
+		printf("0x%.2x: %s\n", codes[i].c, codes[i].code);
 	}
 	return 0;
 }
@@ -84,7 +87,7 @@ void sort_codes(CharCode *codes, int n) {
 }
 
 void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
-	if (node->c != '\0') {
+	if (node->left == NULL && node->right == NULL) {
 		codes[*j].code = (char*)malloc((strlen(code) + 1) *
 			sizeof(char));
 		codes[*j].c = node->c;
