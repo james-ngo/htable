@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
 	Node *node_arr;
 	Node *node;
 	LinkedList list = { 0 };
+	CharCode *codes;
 	char *code;
 	infile = fopen(argv[1], "r");
 	if (!infile) {
@@ -44,39 +45,71 @@ int main(int argc, char *argv[]) {
 		remove_at(node_arr, min(node_arr, max_idx), max_idx);
 		max_idx--;
 	}
+	/*
+	print_list(&list);
+	*/
 	to_tree(&list);
+	/*
+	printInorder(list.head);
+	*/
 	i = 0;
+	j = 0;
 	code = (char*)malloc(sizeof(char));
 	code[0] = '\0';
-	traverse(list.head, code, i);
+	codes = (CharCode*)malloc(uniq_chars * sizeof(CharCode));
+	traverse(list.head, codes, code, i, &j);
+	sort_codes(codes, uniq_chars);
+	for (i = 0; i < uniq_chars; i++) {
+		printf("0x%x: %s\n", codes[i].c, codes[i].code);
+	}
 	return 0;
 }
 
+void sort_codes(CharCode *codes, int n) {
+	int i;
+	int j;
+	CharCode temp;
+	int lowest;
+	for (i = 0; i < n - 1; i++) {
+		lowest = i;
+		for (j = i + 1; j < n; j++) {
+			if (codes[j].c < codes[lowest].c) {
+				lowest = j;
+			}
+		}
+		temp = codes[lowest];
+		codes[lowest] = codes[i];
+		codes[i] = temp;
+	}
+}
 
-void traverse(Node *node, char *code, int i) {
+void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
 	if (node->c != '\0') {
-		printf("0x%x: %s\n", node->c, code);
+		codes[*j].code = (char*)malloc((strlen(code) + 1) *
+			sizeof(char));
+		codes[*j].c = node->c;
+		strcpy(codes[*j].code, code);
+		(*j)++;
 		return;
 	}
 	if (node->left != NULL) {
 		code = realloc(code, (strlen(code) + 2) * sizeof(char));
 		code[i] = '0';
 		code[i + 1] = '\0';
-		traverse(node->left, code, i + 1);
+		traverse(node->left, codes, code, i + 1, j);
 	}
 	if (node->right != NULL) {
 		code = realloc(code, (strlen(code) + 2) * sizeof(char));
 		code[i] = '1';
 		code[i + 1] = '\0';
-		traverse(node->right, code, i + 1);
+		traverse(node->right, codes, code, i + 1, j);
 	}
-	i--;
 }
 
 void print_list(LinkedList* list) {
 	Node *current_node = list->head;
 	while (current_node) {
-		printf("%9c : %d\n", current_node->c, current_node->freq);
+		printf("%d : %d\n", current_node->c, current_node->freq);
 		current_node = current_node->next;
 	}
 }
@@ -110,7 +143,7 @@ void printInorder(Node* node) {
 	if (node == NULL) 
 		return;
 	printInorder(node->left); 
-	printf("%9c : %d\n", (node->c == ' '? '_' : node->c), node->freq);
+	printf("%d : %d\n", node->c, node->freq);
 	printInorder(node->right); 
 } 
 
