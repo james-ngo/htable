@@ -28,10 +28,6 @@ struct code {
 
 void traverse(Node*, CharCode*, char*, int, int*);
 
-void print_list(LinkedList*);
-
-void printInorder(Node*);
-
 void append(LinkedList*, Node*);
 
 void sort_codes(CharCode*, int);

@@ -18,7 +18,10 @@ int main(int argc, char *argv[]) {
 	char *code;
 	infile = fopen(argv[1], "r");
 	if (!infile) {
-		printf("usage: %s infile\n", argv[0]);
+		if (!argv[1]) 
+			printf("usage: %s infile\n", argv[0]);
+		else
+			perror(argv[1]);
 		return 1;
 	}
 	while (EOF != (c = fgetc(infile))) {
@@ -48,13 +51,7 @@ int main(int argc, char *argv[]) {
 		remove_at(node_arr, min(node_arr, max_idx), max_idx);
 		max_idx--;
 	}
-	/*
-	print_list(&list);
-	*/
 	to_tree(&list);
-	/*
-	printInorder(list.head);
-	*/
 	i = 0;
 	j = 0;
 	code = (char*)malloc(sizeof(char));
@@ -109,14 +106,6 @@ void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
 	}
 }
 
-void print_list(LinkedList* list) {
-	Node *current_node = list->head;
-	while (current_node) {
-		printf("%d : %d\n", current_node->c, current_node->freq);
-		current_node = current_node->next;
-	}
-}
-
 void remove_at(Node *node_arr, int i, int n) {
 	for (; i < n; i++) {
 		node_arr[i] = node_arr[i + 1];
@@ -141,14 +130,6 @@ void to_tree(LinkedList *list) {
 		treeify(list);
 	}
 }
-
-void printInorder(Node* node) { 
-	if (node == NULL) 
-		return;
-	printInorder(node->left); 
-	printf("%d : %d\n", node->c, node->freq);
-	printInorder(node->right); 
-} 
 
 void treeify(LinkedList *list) {
 	Node *new_node = (Node*)malloc(sizeof(Node));
