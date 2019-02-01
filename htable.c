@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "htable.h"
 
 int main(int argc, char *argv[]) {
@@ -62,6 +63,14 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < uniq_chars; i++) {
 		printf("0x%.2x: %s\n", codes[i].c, codes[i].code);
 	}
+	free(node_arr);
+	free(code);
+	for (i = 0; i < uniq_chars; i++) {
+		free(codes[i].code);
+	}
+	free(codes);
+	free_all(list.head);
+	fclose(infile);
 	return 0;
 }
 
@@ -83,6 +92,16 @@ void sort_codes(CharCode *codes, int n) {
 	}
 }
 
+void free_all(Node *node) {
+	if (node->left != NULL) {
+		free_all(node->left);
+	}
+	if (node->right != NULL) {
+		free_all(node->right);
+	}
+	free(node);
+}
+
 void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
 	if (node->left == NULL && node->right == NULL) {
 		codes[*j].code = (char*)malloc((strlen(code) + 1) *
@@ -93,13 +112,11 @@ void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
 		return;
 	}
 	if (node->left != NULL) {
-		code = realloc(code, (strlen(code) + 2) * sizeof(char));
 		code[i] = '0';
 		code[i + 1] = '\0';
 		traverse(node->left, codes, code, i + 1, j);
 	}
 	if (node->right != NULL) {
-		code = realloc(code, (strlen(code) + 2) * sizeof(char));
 		code[i] = '1';
 		code[i + 1] = '\0';
 		traverse(node->right, codes, code, i + 1, j);
@@ -107,7 +124,7 @@ void traverse(Node *node, CharCode *codes, char *code, int i, int *j) {
 }
 
 void remove_at(Node *node_arr, int i, int n) {
-	for (; i < n; i++) {
+	for (; i < n - 1; i++) {
 		node_arr[i] = node_arr[i + 1];
 	}
 }
@@ -133,6 +150,7 @@ void to_tree(LinkedList *list) {
 
 void treeify(LinkedList *list) {
 	Node *new_node = (Node*)malloc(sizeof(Node));
+	new_node->c = '\0';
 	new_node->left = list->head;
 	new_node->freq = list->head->freq;
 	list->head = list->head->next;

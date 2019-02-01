@@ -26,6 +26,8 @@ struct code {
 	char *code;
 };
 
+void free_all(Node*);
+
 void traverse(Node*, CharCode*, char*, int, int*);
 
 void append(LinkedList*, Node*);
