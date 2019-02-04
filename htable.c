@@ -2,34 +2,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "htable.h"
+#define SIZE 4096
 
 int main(int argc, char *argv[]) {
-	FILE *infile;
 	int histogram[256] = { 0 };
-	int i;
-	int c;
-	int j;
+	int infile, i, j;
+	ssize_t num;
 	int uniq_chars = 0;
 	int max_idx;
 	Node *node_arr;
 	Node *node;
 	LinkedList list = { 0 };
-	CharCode *codes;
 	char *code;
-	infile = fopen(argv[1], "r");
-	if (!infile) {
-		if (!argv[1]) 
-			printf("usage: %s infile\n", argv[0]);
-		else
-			perror(argv[1]);
-		return 1;
+	CharCode *codes;
+	unsigned char buff[SIZE];
+	if (-1 == (infile = open(argv[1], O_RDONLY))) {
+		perror(argv[1]);
+		exit(EXIT_FAILURE);
 	}
-	while (EOF != (c = fgetc(infile))) {
-		if (!histogram[c]) {
-			uniq_chars++;
+	while ((num = read(infile, buff, SIZE)) > 0) {
+		for (i = 0; i < num; i++) {
+			if (!histogram[(int)buff[i]]) {
+				uniq_chars++;
+			}
+			histogram[(int)buff[i]] += 1;
 		}
-		histogram[c] += 1;
 	}
 	if (!uniq_chars) {
 		return 0;
@@ -62,15 +62,13 @@ int main(int argc, char *argv[]) {
 	sort_codes(codes, uniq_chars);
 	for (i = 0; i < uniq_chars; i++) {
 		printf("0x%.2x: %s\n", codes[i].c, codes[i].code);
-	}
-	free(node_arr);
-	free(code);
-	for (i = 0; i < uniq_chars; i++) {
 		free(codes[i].code);
 	}
 	free(codes);
+	free(node_arr);
+	free(code);
 	free_all(list.head);
-	fclose(infile);
+	close(infile);
 	return 0;
 }
 
